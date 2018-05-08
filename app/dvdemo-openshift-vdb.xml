@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vdb name="dvdemo-openshift" version="1">
+<description/>
+<property name="validationDateTime" value="Mon May 07 20:59:46 PDT 2018"/>
+<property name="validationVersion" value="8.12.11"/>
+<model name="MYSQL" visible="false">
+<source connection-jndi-name="java:/MySQL_DS" name="MYSQL" translator-name="mysql5"/>
+<metadata type="DDL"><![CDATA[
+
+CREATE FOREIGN TABLE employees (
+	emp_no integer NOT NULL OPTIONS(NAMEINSOURCE '`emp_no`', NATIVE_TYPE 'INT', FIXED_LENGTH 'TRUE'),
+	birth_date date NOT NULL OPTIONS(NAMEINSOURCE '`birth_date`', NATIVE_TYPE 'DATE', FIXED_LENGTH 'TRUE'),
+	first_name string(14) NOT NULL OPTIONS(NAMEINSOURCE '`first_name`', NATIVE_TYPE 'VARCHAR'),
+	last_name string(16) NOT NULL OPTIONS(NAMEINSOURCE '`last_name`', NATIVE_TYPE 'VARCHAR'),
+	gender string(2) NOT NULL OPTIONS(NAMEINSOURCE '`gender`', NATIVE_TYPE 'ENUM', FIXED_LENGTH 'TRUE'),
+	hire_date date NOT NULL OPTIONS(NAMEINSOURCE '`hire_date`', NATIVE_TYPE 'DATE', FIXED_LENGTH 'TRUE'),
+	CONSTRAINT "PRIMARY" PRIMARY KEY(emp_no) OPTIONS(NAMEINSOURCE '`PRIMARY`')
+) OPTIONS(NAMEINSOURCE '`employees`', UPDATABLE 'TRUE', CARDINALITY '300024');
+
+]]></metadata>
+</model>
+<model name="MONGO" visible="false">
+<source connection-jndi-name="java:/Mongo_DS" name="MONGO" translator-name="mongodb"/>
+<metadata type="DDL"><![CDATA[
+
+CREATE FOREIGN TABLE salaries (
+	"_id" object,
+	emp_no integer,
+	salary integer,
+	from_date string,
+	to_date string,
+	CONSTRAINT PK0 PRIMARY KEY("_id")
+) OPTIONS(UPDATABLE 'TRUE');
+
+]]></metadata>
+</model>
+<model name="EmployeeViewModel" type="VIRTUAL">
+<property name="imports" value="MONGO"/>
+<metadata type="DDL"><![CDATA[
+
+CREATE VIEW EmpSalaries (
+	emp_no integer NOT NULL OPTIONS(FIXED_LENGTH 'TRUE'),
+	first_name string(14) NOT NULL,
+	last_name string(16) NOT NULL,
+	salary integer,
+	from_date date,
+	to_date date,
+	CONSTRAINT pkey PRIMARY KEY(emp_no)
+) OPTIONS(UPDATABLE 'TRUE') 
+AS
+	SELECT e.emp_no, e.first_name, e.last_name, s.salary, convert(s.from_date, date) AS from_date, convert(s.to_date, date) AS to_date FROM MYSQL.employees AS e INNER JOIN MONGO.salaries AS s ON e.emp_no = s.emp_no;
+
+]]></metadata>
+</model>
+</vdb>
