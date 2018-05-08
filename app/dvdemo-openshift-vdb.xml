@@ -3,7 +3,7 @@
 <description/>
 <property name="validationDateTime" value="Mon May 07 20:59:46 PDT 2018"/>
 <property name="validationVersion" value="8.12.11"/>
-<model name="MYSQL" visible="false">
+<model name="MYSQL" visible="true">
 <source connection-jndi-name="java:/MySQL_DS" name="MYSQL" translator-name="mysql5"/>
 <metadata type="DDL"><![CDATA[
 
@@ -19,7 +19,7 @@ CREATE FOREIGN TABLE employees (
 
 ]]></metadata>
 </model>
-<model name="MONGO" visible="false">
+<model name="MONGO" visible="true">
 <source connection-jndi-name="java:/Mongo_DS" name="MONGO" translator-name="mongodb"/>
 <metadata type="DDL"><![CDATA[
 
